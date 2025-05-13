@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Biogas Monitoring Dashboard</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+  h1 { text-align: center; color: #333; }
+  .dashboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+  .card {
+    background-color: #fff; border-radius: 8px; padding: 20px; width: 250px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .card h2 { margin-top: 0; font-size: 1.2em; color: #555; }
+  .value { font-size: 2em; margin-top: 10px; }
+  #alerts { max-width: 800px; margin: 20px auto; }
+  .alert { padding: 10px; margin-bottom: 10px; border-radius: 4px; font-weight: bold; }
+  .alert-high { background-color: #f8d7da; color: #721c24; }
+  .alert-warning { background-color: #fff3cd; color: #856404; }
+  .alert-normal { background-color: #d4edda; color: #155724; }
+  button { margin-top: 10px; padding: 8px 12px; font-size: 1em; border: none; border-radius: 4px; cursor: pointer; }
+  button:hover { background-color: #ddd; }
+</style>
+</head>
+<body>
+
+<h1>Biogas Monitoring Dashboard</h1>
+
+<div class="dashboard">
+  <div class="card" id="tempCard">
+    <h2>Temperature</h2>
+    <div class="value" id="tempValue">-- °C</div>
+  </div>
+  <div class="card" id="gasCard">
+    <h2>Gas Level</h2>
+    <div class="value" id="gasValue">--</div>
+  </div>
+  <div class="card" id="sludgeCard">
+    <h2>Sludge Level</h2>
+    <div class="value" id="sludgeValue">-- cm</div>
+  </div>
+</div>
+
+<div style="text-align:center;">
+  <button onclick="simulateData()">Simulate New Data</button>
+</div>
+
+<div id="alerts"></div>
+
+<script>
+  // Thresholds for alerts
+  const thresholds = {
+    temperature: 50,   // °C
+    gas: 300,          // arbitrary units
+    sludge: 50         // cm
+  };
+
+  // Function to update the UI with data
+  function updateUI(data) {
+    // Update temperature
+    document.getElementById('tempValue').innerText = data.temperature.toFixed(1) + ' °C';
+    // Update gas
+    document.getElementById('gasValue').innerText = data.gas.toFixed(0);
+    // Update sludge
+    document.getElementById('sludgeValue').innerText = data.sludge.toFixed(1) + ' cm';
+
+    // Clear previous alerts
+    const alertsDiv = document.getElementById('alerts');
+    alertsDiv.innerHTML = '';
+
+    // Check thresholds and display alerts
+    if (data.temperature > thresholds.temperature) {
+      alertsDiv.innerHTML += '<div class="alert alert-high">High Temperature!</div>';
+    }
+    if (data.gas > thresholds.gas) {
+      alertsDiv.innerHTML += '<div class="alert alert-high">High Gas Level!</div>';
+    }
+    if (data.sludge < thresholds.sludge) {
+      alertsDiv.innerHTML += '<div class="alert alert-warning">Sludge Level Low!</div>';
+    }
+
+    if (!alertsDiv.innerHTML) {
+      alertsDiv.innerHTML = '<div class="alert alert-normal">All parameters normal.</div>';
+    }
+  }
+
+  // Function to simulate new data
+  function simulateData() {
+    const data = {
+      temperature: Math.random() * 60, // 0 to 60°C
+      gas: Math.random() * 500,        // 0 to 500 units
+      sludge: Math.random() * 100      // 0 to 100 cm
+    };
+    updateUI(data);
+  }
+
+  // Initialize with simulated data
+  simulateData();
+
+  // Optional: refresh data every minute
+  setInterval(simulateData, 60000);
+</script>
+
+</body>
+</html>
